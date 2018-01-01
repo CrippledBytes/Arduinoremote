@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Arduino Remote</string>
+    <string name="editstring">set UART 16</string>
+    <string name="send_btn">SEND</string>
+    <string name="pwr_btn">POWER</string>
+    <string name="cu_btn">CHANNEL +</string>
+    <string name="cd_btn">CHANNEL -</string>
+    <string name="vu_btn">VOLUME +</string>
+    <string name="vd_btn">VOLUME -</string>
+    <string name="up_btn">UP</string>
+    <string name="dwn_btn">DWN</string>
+    <string name="lft_btn">LFT</string>
+    <string name="rght_btn">RGT</string>
+    <string name="menu_btn">MENU</string>
+    <string name="ok_btn">OK</string>
+    <string name="back_btn">BACK</string>
+    <string name="exit_btn">EXIT</string>
+    <string name="guide_btn">GUIDE</string>
+</resources>
