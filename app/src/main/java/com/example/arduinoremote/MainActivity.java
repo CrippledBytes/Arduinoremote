@@ -34,6 +34,7 @@ package com.example.arduinoremote;
         //import java.net.SocketException;
         //import java.net.SocketTimeoutException;
         import java.net.SocketException;
+        import java.net.SocketTimeoutException;
         import java.net.UnknownHostException;
         import java.nio.ByteOrder;
 
@@ -41,9 +42,9 @@ package com.example.arduinoremote;
         import static java.lang.Boolean.TRUE;
 
 public class MainActivity extends AppCompatActivity {
-    private Socket socket;
+
     private TextView tv;
-    private static final int SERVERPORT = 1588;
+    private TextView tvError;
     private String SERVER_IP = "192.168.0.106";
     private static final String TAG = "Arduino Remote";
 
@@ -52,32 +53,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tv = (TextView) findViewById(R.id.IP_target);
+        tvError = (TextView) findViewById(R.id.Error_target);
         if (isWifiConnected()) {
-            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
 
-            // Convert little-endian to big-endianif needed
-            if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
-                ipAddress = Integer.reverseBytes(ipAddress);
-            }
+                WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
 
-            byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
+                // Convert little-endian to big-endianif needed
+                if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
+                    ipAddress = Integer.reverseBytes(ipAddress);
+                }
 
-            String ipAddressString;
-            try {
-                ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
-            } catch (UnknownHostException ex) {
-                Log.e("WIFIIP", "Unable to get host address.");
-                ipAddressString = null;
-            }
-            if (ipAddressString != null) {
-                byte[] payload = "ip".getBytes();
+                byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
 
-                ipAddressString = ipAddressString.substring(0, ipAddressString.lastIndexOf(".") + 1);
-            }
-            ScanNetwork findIt = new ScanNetwork();
-            findIt.execute(ipAddressString);
-            new Thread(new ClientThread()).start();
+                String ipAddressString;
+                try {
+                    ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
+                } catch (UnknownHostException ex) {
+                    Log.e("WIFIIP", "Unable to get host address.");
+                    ipAddressString = null;
+                }
+                if (ipAddressString != null) {
+                    byte[] payload = "ip".getBytes();
+
+                    ipAddressString = ipAddressString.substring(0, ipAddressString.lastIndexOf(".") + 1);
+                }
+                ScanNetwork findIt = new ScanNetwork();
+                findIt.execute(ipAddressString);
+
         } else {
             new AlertDialog.Builder(this)
                     .setTitle("No Wifi Connection")
@@ -92,9 +95,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClick(View view) {
-        EditText et = (EditText) findViewById(R.id.editText);
-        String str = et.getText().toString();
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()){
+            EditText et = (EditText) findViewById(R.id.editText);
+            String str = et.getText().toString();
+            SendCommand sc = new SendCommand();
+            sc.execute(str);
+        }
     }
 
     public void killMe() {
@@ -103,139 +109,163 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void pow_btn_Click(View view) {
-        String str = "set UART 16";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 16");
+        }
     }
 
     public void chan_up_btn_Click(View view) {
-        String str = "set UART 2A";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 2A");
+        }
     }
 
     public void chan_dwn_btn_Click(View view) {
-        String str = "set UART 2D";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 2D");
+        }
     }
 
     public void vol_dwn_btn_Click(View view) {
-        String str = "set UART 29";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()){
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 29");
+        }
     }
 
     public void vol_up_btn_Click(View view) {
-        String str = "set UART 26";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 26");
+        }
     }
 
     public void btn_0_Click(View view) {
-        String str = "set UART 15";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 15");
+        }
     }
 
     public void btn_1_Click(View view) {
-        String str = "set UART 02";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 02");
+        }
     }
 
     public void btn_2_Click(View view) {
-        String str = "set UART 05";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()){
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 05");
+        }
     }
 
     public void btn_3_Click(View view) {
-        String str = "set UART 06";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 06");
+        }
     }
 
     public void btn_4_Click(View view) {
-        String str = "set UART 09";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 09");
+        }
     }
 
     public void btn_5_Click(View view) {
-        String str = "set UART 0A";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 0A");
+        }
     }
 
     public void btn_6_Click(View view) {
-        String str = "set UART 0D";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 0D");
+        }
     }
 
     public void btn_7_Click(View view) {
-        String str = "set UART 0E";
-        sendCommand(str.toCharArray());
+        if(isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 0E");
+        }
     }
 
     public void btn_8_Click(View view) {
-        String str = "set UART 11";
-        sendCommand(str.toCharArray());
+        if (isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 11");
+        }
     }
 
     public void btn_9_Click(View view) {
-        String str = "set UART 12";
-        sendCommand(str.toCharArray());
+        if (isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 12");
+        }
     }
 
     public void btn_ok_Click(View view) {
-        String str = "set UART 36";
-        sendCommand(str.toCharArray());
+        if (isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 36");
+        }
     }
 
     public void btn_menu_Click(View view) {
-        String str = "set UART 21";
-        sendCommand(str.toCharArray());
+        if (isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 21");
+        }
     }
 
     public void btn_exit_Click(View view) {
-        String str = "set UART 3D";
-        sendCommand(str.toCharArray());
+        if (isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 3D");
+        }
     }
 
     public void btn_guide_Click(View view) {
-        String str = "set UART 1A";
-        sendCommand(str.toCharArray());
+        if (isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 1A");
+        }
     }
 
     public void btn_lft_Click(View view) {
-        String str = "set UART 31";
-        sendCommand(str.toCharArray());
+        if (isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 31");
+        }
     }
 
     public void btn_rgt_Click(View view) {
-        String str = "set UART 32";
-        sendCommand(str.toCharArray());
+        if (isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 32");
+        }
     }
 
     public void btn_up_Click(View view) {
-        String str = "set UART 2E";
-        sendCommand(str.toCharArray());
+        if (isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 2E");
+        }
     }
 
     public void btn_dwn_Click(View view) {
-        String str = "set UART 35";
-        sendCommand(str.toCharArray());
-    }
-
-    public void sendCommand(char command[]) {
-        try {
-            String str = new String(command);
-            PrintWriter out = new PrintWriter(new BufferedWriter(
-                    new OutputStreamWriter(socket.getOutputStream())),
-                    true);
-            out.println(str);
-        } catch (UnknownHostException e) {
-            TextView tvError = (TextView) findViewById(R.id.Error_target);
-            tvError.setText("Host onbekend send");
-            Log.e(TAG, Log.getStackTraceString(e));
-        } catch (IOException e) {
-            TextView tvError = (TextView) findViewById(R.id.Error_target);
-            tvError.setText("IOException send");
-            Log.e(TAG, Log.getStackTraceString(e));
-        } catch (Exception e) {
-            TextView tvError = (TextView) findViewById(R.id.Error_target);
-            tvError.setText("Fehler send");
-            Log.e(TAG, Log.getStackTraceString(e));
+        if (isWifiConnected()) {
+            SendCommand sc = new SendCommand();
+            sc.execute("set UART 35");
         }
     }
 
@@ -247,20 +277,23 @@ public class MainActivity extends AppCompatActivity {
         return networkInfo != null && (ConnectivityManager.TYPE_WIFI == networkInfo.getType()) && networkInfo.isConnected();
     }
 
+
     private class ScanNetwork extends AsyncTask<String, String, String> {
         private int UDPPORT = 7682;
         byte[] buf = new byte[250];
-        private String strip = "wiii";
+        private String strip = "nope";
         ProgressDialog progressDialog;
 
         @Override
         protected String doInBackground(String... params) {
             byte[] payload = "ip".getBytes();
+            String currentIP;
             for (int i = 2; i < 255; i++) {
-                publishProgress("IP: " + params[0] + Integer.valueOf(i).toString());
+                currentIP = params[0] + Integer.valueOf(i).toString();
+                publishProgress("IP: " + currentIP);
                 try (DatagramSocket clientSocket = new DatagramSocket()) {
-                    InetAddress address = InetAddress.getByName(params[0] + i);
-                    clientSocket.setSoTimeout(100);
+                    InetAddress address = InetAddress.getByName(currentIP);
+                    clientSocket.setSoTimeout(200);
                     DatagramPacket multi = new DatagramPacket(payload, payload.length, address, UDPPORT);
                     DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
                     clientSocket.send(multi);
@@ -285,21 +318,21 @@ public class MainActivity extends AppCompatActivity {
             return strip;
         }
 
-
+        @Override
         protected void onPostExecute(String result) {
             progressDialog.dismiss();
-            if (!result.equals("wiii")) {
+            if (!result.equals("nope")) {
                 SERVER_IP = result;
                 tv.setText(result);
             }
         }
-
+        @Override
         protected void onPreExecute() {
             progressDialog = ProgressDialog.show(MainActivity.this,
                     "Networkscan",
                     "Wait for networkscan...");
         }
-
+        @Override
         protected void onProgressUpdate(String... progress) {
 
             // Update the ProgressBar
@@ -307,29 +340,43 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-private class ClientThread implements Runnable {
+    private class SendCommand extends AsyncTask<String,Void,String> {
+        private int SERVERPORT = 1588;
 
         @Override
-        public void run() {
-
+        protected String doInBackground(String... params) {
             try {
                 InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
-
-                socket = new Socket(serverAddr, SERVERPORT);
-
-            } catch (UnknownHostException e1) {
-                TextView tvError = (TextView) findViewById(R.id.Error_target);
-                tvError.setText("Host onbekend client ");
-                Log.e(TAG,Log.getStackTraceString(e1));
-            } catch (IOException e1) {
-                TextView tvError = (TextView) findViewById(R.id.Error_target);
-                tvError.setText("IOException client");
-                Log.e(TAG,Log.getStackTraceString(e1));
+                Socket socket = new Socket(serverAddr, SERVERPORT);
+                socket.setSoTimeout(1000);
+                String str = new String(params[0]);
+                PrintWriter out = new PrintWriter(new BufferedWriter(
+                        new OutputStreamWriter(socket.getOutputStream())),
+                        true);
+                out.println(str);
+                out.flush();
+            } catch (SocketTimeoutException e){
+                tvError.setText("Socket Timeout :(");
+                Log.e(TAG, Log.getStackTraceString(e));
+            } catch (UnknownHostException e) {
+                tvError.setText("Host onbekend send");
+                Log.e(TAG, Log.getStackTraceString(e));
+            } catch (IOException e) {
+                tvError.setText("IOException send");
+                Log.e(TAG, Log.getStackTraceString(e));
+            } catch (Exception e) {
+                tvError.setText("Fehler send");
+                Log.e(TAG, Log.getStackTraceString(e));
             }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(String result){
+        }
+        @Override
+        protected void onPreExecute() {
 
         }
 
     }
-
 }
