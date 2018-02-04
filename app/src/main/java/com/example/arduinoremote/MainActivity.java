@@ -355,6 +355,7 @@ public class MainActivity extends AppCompatActivity {
                         true);
                 out.println(str);
                 out.flush();
+                socket.close();
             } catch (SocketTimeoutException e){
                 tvError.setText("Socket Timeout :(");
                 Log.e(TAG, Log.getStackTraceString(e));
